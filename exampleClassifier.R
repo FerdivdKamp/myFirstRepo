@@ -21,7 +21,7 @@ library(caret)
 
 ## setting up Cross-Validation (if needed)
 tr = trainControl(method = 'cv', number = 10) # k-fold (10-fold) CV
-tr = trainControl(method = 'LOOCV') # Leave One Out CV
+#tr = trainControl(method = 'LOOCV') # Leave One Out CV
 
 ## Setting up the classifier
 # form sets outcome and (possible) predictor variables
@@ -40,3 +40,13 @@ classifier$bestTune # optimal classifier
 classifier$finalModel
 # You can use this classifier or enter optimal hyperparameters in you classifier
 
+# Save classifier
+saveRDS(classifier, file = 'sampleClassifier.rds')
+
+# Remove classifier
+rm(classifier)
+
+# load classifier
+classifier = readRDS("irisrf.RData")
+
+predict(classifier, input)
