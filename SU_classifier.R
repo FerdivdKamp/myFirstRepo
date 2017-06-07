@@ -24,8 +24,8 @@ plot_feature_importance <- function(imp) {
 
 
 ## Preparing data
-# Path for csv
-# "E:/Machine Learning BnD/Possible QA Article/Lara's work/170331_demo_zygo_aseg_output_QCcomplete_with_volume_and_thickness_FT.csv"
+# Path for csv --CHANGE--
+# USB_Fer "E:/Machine Learning BnD/Possible QA Article/Lara's work/170331_demo_zygo_aseg_output_QCcomplete_with_volume_and_thickness_FT.csv"
 
 data2 = data.frame(read.table("E:/Machine Learning BnD/Possible QA Article/Lara's work/170331_demo_zygo_aseg_output_QCcomplete_with_volume_and_thickness_FT.csv",sep=",",header=TRUE))
 
@@ -147,7 +147,7 @@ classifier3$finalModel
 print(classifier3$finalModel)
 
 
-#Importance does not 
+#Importance does not work yet..
 importance(classifier3$finalModel)
 imp <- importance(classifier3$finalModel)
 select <- as.data.frame(imp)
@@ -157,18 +157,72 @@ imp_pick2 = select[select_order,, drop=FALSE] # select variables as data.frame (
 p_imp = plot_feature_importance(imp_pick2) # create plot
 print(p_imp) # show plot
 
+
+## svm (linear,poly,radial) svmLinear svmPoly svmRadial
+#install.packages('kernlab')
+classifier.svm = train(form = y ~ .,
+                    data = training_set,
+                    trControl = tr,
+                    method = 'svmLinear')
+classifier.svm # tunes the model and gives you the output
+classifier.svm$results
+classifier.svm$bestTune # optimal classifier
+classifier.svm$finalModel
+# You can use this classifier or enter optimal hyperparameters in your classifier
+print(classifier.svm$finalModel)
+
+# svmPoly
+
+classifier.svmP = train(form = y ~ .,
+                       data = training_set,
+                       trControl = tr,
+                       method = 'svmPoly')
+classifier.svmP # tunes the model and gives you the output
+classifier.svmP$results
+classifier.svmP$bestTune # optimal classifier
+classifier.svmP$finalModel
+# You can use this classifier or enter optimal hyperparameters in your classifier
+print(classifier.svmP$finalModel)
+
+# svmRadial
+classifier.svmR = train(form = y ~ .,
+                        data = training_set,
+                        trControl = tr,
+                        method = 'svmRadial')
+classifier.svmR # tunes the model and gives you the output
+classifier.svmR$results
+classifier.svmR$bestTune # optimal classifier
+classifier.svmR$finalModel
+# You can use this classifier or enter optimal hyperparameters in your classifier
+print(classifier.svmR$finalModel)
+
+
+
 ### Overall Comparison
 
 rf_pred = predict(classifier, test_set)
 xgb_pred = predict(classifier2, test_set)
 orf_pred = predict(classifier3, test_set)
+svmL_pred = predict(classifier.svm, test_set)
+svmP_pred = predict(classifier.svmP, test_set)
+svmR_pred = predict(classifier.svmR, test_set)
+
 rf_pred
 xgb_pred
 orf_pred
+svmL_pred
+svmP_pred
+svmR_pred
 
-cm = table(test_set$y, rf_pred)
+cm = table(test_set$y, rf_pred)  # rf
 cm
-cm2= table(test_set$y,xgb_pred)
+cm2= table(test_set$y,xgb_pred)  # xgboost
 cm2
-cm3= table(test_set$y,orf_pred)
+cm3= table(test_set$y,orf_pred)  # orf
 cm3
+cm4= table(test_set$y,svmL_pred) # svmLinear
+cm4
+cm5= table(test_set$y,svmP_pred) # svmPolynomial
+cm5
+cm6= table(test_set$y,svmR_pred) # svmRadial
+cm6
