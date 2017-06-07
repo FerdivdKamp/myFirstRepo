@@ -15,7 +15,7 @@ plot_feature_importance <- function(imp) {
     ylab("Importance") + 
     ggtitle(paste("Random Forest Feature Importance",sep=" ")) +
     theme(plot.title=element_text(size=18),
-          axis.text.x = element_text (size = font_size,color="#888888")) +
+          axis.text.x = element_text (size = 6,color="#888888")) +
     coord_flip()
   # print(p)
 }
@@ -71,14 +71,14 @@ tr = trainControl(method = 'cv', number = 10) # k-fold (10-fold) CV
 # trControl allows e.g. Cross-Validation
 # metric is optional Classification default are 'Accuracy and Kappa', regression defaults are 'RMSE & Rsquared'
 # method refers to model see: http://topepo.github.io/caret/train-models-by-tag.html
-# Possible candidates are Random Forest, other tree-based models or Supoprt Vector Machines
-# just for Random Forest it offers: 
+# Possible candidates are Random Forest, other tree-based models or Support Vector Machines
 
-# rf needs packages randomForest and e1071
+
+# rf needs packages randomForest and e1071, it will load what it needs and asks to install is missing (though you might need to run it again) 
 #install.packages('e1071')
-library(e1071)
+#library(e1071)
 #install.packages('randomForest')
-library(randomForest)
+#library(randomForest)
 
 
 classifier = train(form = y ~ .,
@@ -96,10 +96,11 @@ print(classifier$finalModel)
 importance(classifier$finalModel)
 imp <- importance(classifier$finalModel)
 select <- as.data.frame(imp)
-names <- rev(order(select$MeanDecreaseGini))[1:8]
+names <- rev(order(select$MeanDecreaseGini))[1:10] # order en select names of top 8 performers
 select_order <- row.names(select)[names]
-p_imp = plot_feature_importance(imp)
-print(p_imp)
+imp_pick = select[select_order,, drop=FALSE] # select variables as data.frame (drop = FALSE ensure it retains type)
+p_imp = plot_feature_importance(imp_pick) # create plot
+print(p_imp) # show plot
 
 # Save classifier
 saveRDS(classifier, file = 'sampleClassifier.rds')
@@ -114,4 +115,60 @@ predict(classifier, input)
 
 #
 col_viewovertown <- c("#FF5335","#B29C85","#306E73","#3B424C","#1D181F") # https://color.adobe.com/View-over-the-town-color-theme-1637621/
-font_size = 6
+font_size = 3
+
+
+
+## GXBoost
+classifier2 = train(form = y ~ .,
+                   data = training_set,
+                   trControl = tr,
+                   method = 'xgbTree')
+classifier2 # tunes the model and gives you the output
+classifier2$results
+classifier2$bestTune # optimal classifier
+classifier2$finalModel
+# You can use this classifier or enter optimal hyperparameters in your classifier
+print(classifier2$finalModel)
+
+
+### Oblique Random Forest (ORFlog)
+#install.packages('obliqueRF')
+#library(obliqueRF)
+classifier3 = train(form = y ~ .,
+                    data = training_set,
+                    trControl = tr,
+                    method = 'ORFlog')
+classifier3 # tunes the model and gives you the output
+classifier3$results
+classifier3$bestTune # optimal classifier
+classifier3$finalModel
+# You can use this classifier or enter optimal hyperparameters in your classifier
+print(classifier3$finalModel)
+
+
+#Importance does not 
+importance(classifier3$finalModel)
+imp <- importance(classifier3$finalModel)
+select <- as.data.frame(imp)
+names <- rev(order(select$MeanDecreaseGini))[1:10] # order en select names of top 8 performers
+select_order <- row.names(select)[names]
+imp_pick2 = select[select_order,, drop=FALSE] # select variables as data.frame (drop = FALSE ensure it retains type)
+p_imp = plot_feature_importance(imp_pick2) # create plot
+print(p_imp) # show plot
+
+### Overall Comparison
+
+rf_pred = predict(classifier, test_set)
+xgb_pred = predict(classifier2, test_set)
+orf_pred = predict(classifier3, test_set)
+rf_pred
+xgb_pred
+orf_pred
+
+cm = table(test_set$y, rf_pred)
+cm
+cm2= table(test_set$y,xgb_pred)
+cm2
+cm3= table(test_set$y,orf_pred)
+cm3
