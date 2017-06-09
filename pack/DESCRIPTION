@@ -2,8 +2,10 @@ Package: pack
 Title: What the Package Does (one line, title case)
 Version: 0.0.0.9000
 Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Description: What the package does (one paragraph). 
+TODO LIST: ROC/AUC and various plots. Make sure it tests for compatibility with algorithm (R.version)
 Depends: R (>= 3.3.2)
+Imports: randomForest
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true

@@ -38,7 +38,7 @@ classifier # tunes the model and gives you the output
 classifier$results
 classifier$bestTune # optimal classifier
 classifier$finalModel
-# You can use this classifier or enter optimal hyperparameters in you classifier
+# You can use this classifier or enter optimal hyperparameters in your classifier
 
 # Save classifier
 saveRDS(classifier, file = 'sampleClassifier.rds')
@@ -50,3 +50,7 @@ rm(classifier)
 classifier = readRDS("irisrf.RData")
 
 predict(classifier, input)
+
+
+
+

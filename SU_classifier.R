@@ -25,9 +25,9 @@ plot_feature_importance <- function(imp) {
 
 ## Preparing data
 # Path for csv --CHANGE--
-# USB_Fer "E:/Machine Learning BnD/Possible QA Article/Lara's work/170331_demo_zygo_aseg_output_QCcomplete_with_volume_and_thickness_FT.csv"
-
-data2 = data.frame(read.table("E:/Machine Learning BnD/Possible QA Article/Lara's work/170331_demo_zygo_aseg_output_QCcomplete_with_volume_and_thickness_FT.csv",sep=",",header=TRUE))
+# USB_Fer thuis "E:/Machine Learning BnD/Possible QA Article/Lara's work/170331_demo_zygo_aseg_output_QCcomplete_with_volume_and_thickness_FT.csv"
+# USB_Fer fsw "F:/Machine Learning BnD/Possible QA Article/Lara's work/170331_demo_zygo_aseg_output_QCcomplete_with_volume_and_thickness_FT.csv"
+data2 = data.frame(read.table("F:/Machine Learning BnD/Possible QA Article/Lara's work/170331_demo_zygo_aseg_output_QCcomplete_with_volume_and_thickness_FT.csv",sep=",",header=TRUE))
 
 # Renaming some variables
 names(data2)[1] <- "id"
@@ -75,9 +75,9 @@ tr = trainControl(method = 'cv', number = 10) # k-fold (10-fold) CV
 
 
 # rf needs packages randomForest and e1071, it will load what it needs and asks to install is missing (though you might need to run it again) 
-#install.packages('e1071')
+###install.packages('e1071')
 #library(e1071)
-#install.packages('randomForest')
+###install.packages('randomForest')
 #library(randomForest)
 
 
@@ -120,6 +120,7 @@ font_size = 3
 
 
 ## GXBoost
+###install.packages('gxboost') # does not work in R3.3.2
 classifier2 = train(form = y ~ .,
                    data = training_set,
                    trControl = tr,
@@ -133,7 +134,7 @@ print(classifier2$finalModel)
 
 
 ### Oblique Random Forest (ORFlog)
-#install.packages('obliqueRF')
+###install.packages('obliqueRF')
 #library(obliqueRF)
 classifier3 = train(form = y ~ .,
                     data = training_set,
@@ -226,3 +227,14 @@ cm5= table(test_set$y,svmP_pred) # svmPolynomial
 cm5
 cm6= table(test_set$y,svmR_pred) # svmRadial
 cm6
+
+# Using  ROC AUC AND/OR CAP curve
+# Still needs tweaking
+
+
+#install.packages('pROC')
+library(pROC)
+testOutcome = test_set$y
+testBin = sapply(as.character(testOutcome), switch, 'exlusion' = 2, 'inclusion' = 1, USE.NAMES = F)
+auc(testBin, testBin)
+ 
